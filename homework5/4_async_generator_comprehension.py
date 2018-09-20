@@ -1,5 +1,6 @@
 """
-Use of ProcessPoolExecutor shared by coroutines.
+Use of ProcessPoolExecutor shared by coroutines and async generator
+comprehension.
 """
 import asyncio
 from concurrent.futures import ProcessPoolExecutor
@@ -7,6 +8,22 @@ from concurrent.futures import ProcessPoolExecutor
 N = 10 ** 2 // 5
 M = 10 ** 5 // 5
 TIMER_SEC = 10
+
+
+async def timer(sec):
+    """Runs async timer"""
+    for i in range(1, sec + 1):
+        await asyncio.sleep(1)
+        print(i)
+    return i
+
+
+async def asum(async_gen):
+    """Sums items from async generator"""
+    s = 0
+    async for i in async_gen:
+        s += i
+    return s
 
 
 def check_prime(n):
@@ -21,14 +38,8 @@ def check_prime(n):
     return True
 
 
-async def asum(async_gen):
-    s = 0
-    async for i in async_gen:
-        s += i
-    return s
-
-
 async def sum_primes(n, m, executor, name):
+    """Sums numbers which is located in the [n, m) segment"""
     loop = asyncio.get_event_loop()
     primes_sum = await asum(
         num * await loop.run_in_executor(executor, check_prime, num)
@@ -36,13 +47,6 @@ async def sum_primes(n, m, executor, name):
     )
     print('coroutine', name, 'is completed; sum is', primes_sum)
     return primes_sum
-
-
-async def timer(sec):
-    for i in range(1, sec + 1):
-        await asyncio.sleep(1)
-        print(i)
-    return i
 
 
 if __name__ == '__main__':
