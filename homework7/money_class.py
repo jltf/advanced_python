@@ -15,40 +15,22 @@ class Currency(enum.Enum):
         return self.name
 
 
-def get_rate(currency, target_currency):
-    try:
-        byn_rates = get_rate.byn_rates
-    except AttributeError:
-        json_data = urllib.request.urlopen(RATES_URL).read()
-        rates = json.loads(json_data)
-        byn_rates = {'BYN': 1}
-        for rate in rates:
-            byn_rates[rate['Cur_Abbreviation']] = (
-                float(rate['Cur_OfficialRate']) * int(rate['Cur_Scale'])
-            )
-        get_rate.byn_rates = byn_rates
-    conversion_rate = (
-        byn_rates[currency.name] / byn_rates[target_currency.name]
-    )
-    return conversion_rate
-
-
 class Money:
+    byn_rates = None
+
     def __init__(self, value, currency=Currency.USD):
         self.value = value
         self.currency = currency
 
     def __str__(self):
-        return '{} {}'.format(self.value, self.currency)
+        return f'{self.value} {self.currency}'
 
     def __repr__(self):
-        return '<{}({}, {})>'.format(
-            self.__class__.__name__, self.value, self.currency
-        )
+        return f'<{self.__class__.__name__}({self.value}, {self.currency})>'
 
     def __add__(self, other):
-        other_value = other.value * get_rate(other.currency, self.currency)
-        return Money(self.value + other_value, self.currency)
+        other.convert(self.currency)
+        return Money(self.value + other.value, self.currency)
 
     def __radd__(self, other):
         return Money(self.value + other, self.currency)
@@ -58,6 +40,35 @@ class Money:
 
     def __rmul__(self, other):
         return self.__mul__(other)
+
+    @staticmethod
+    def fetch_byn_rates():
+        byn_rates = Money.byn_rates
+        if byn_rates:
+            return byn_rates
+        json_data = urllib.request.urlopen(RATES_URL).read()
+        rates = json.loads(json_data)
+        byn_rates = {'BYN': 1}
+        for rate in rates:
+            byn_rates[rate['Cur_Abbreviation']] = (
+                float(rate['Cur_OfficialRate']) * int(rate['Cur_Scale'])
+            )
+        Money.byn_rates = byn_rates
+        return byn_rates
+
+    @staticmethod
+    def get_rate(currency, target_currency):
+        byn_rates = Money.fetch_byn_rates()
+        conversion_rate = (
+            byn_rates[currency.name] / byn_rates[target_currency.name]
+        )
+        return conversion_rate
+
+    def convert(self, target_currency):
+        self.value = (
+            self.value * self.get_rate(self.currency, target_currency)
+        )
+        self.currency = target_currency
 
 
 if __name__ == '__main__':
