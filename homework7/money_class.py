@@ -29,8 +29,8 @@ class Money:
         return f'<{self.__class__.__name__}({self.value}, {self.currency})>'
 
     def __add__(self, other):
-        other.convert(self.currency)
-        return Money(self.value + other.value, self.currency)
+        converted = other.convert(self.currency)
+        return Money(self.value + converted.value, self.currency)
 
     def __radd__(self, other):
         return Money(self.value + other, self.currency)
@@ -65,10 +65,10 @@ class Money:
         return conversion_rate
 
     def convert(self, target_currency):
-        self.value = (
+        value = (
             self.value * self.get_rate(self.currency, target_currency)
         )
-        self.currency = target_currency
+        return Money(value, target_currency)
 
 
 if __name__ == '__main__':
