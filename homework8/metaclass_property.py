@@ -7,7 +7,6 @@ A method called set_x, will automatically create a property x that uses
 set_foo as a setter method. Same for get_x and del_x.
 """
 
-from collections.abc import Callable
 from collections import defaultdict
 
 GET = 'get'
@@ -17,11 +16,11 @@ DEL = 'del'
 
 class YourMetaClass(type):
     def __new__(cls, name, bases, namespace, **kwds):
-        result = type.__new__(cls, name, bases, namespace)
-        descr = defaultdict(dict)
+        new_class = type.__new__(cls, name, bases, namespace)
+        property_methods = defaultdict(dict)
 
         for name, attribute in namespace.items():
-            if not isinstance(attribute, Callable):
+            if not callable(attribute):
                 continue
 
             try:
@@ -29,20 +28,21 @@ class YourMetaClass(type):
             except ValueError:
                 continue
 
-            if method not in (GET, SET, DEL):
+            if (method not in (GET, SET, DEL)
+                    or not property_name.isidentifier()):
                 continue
 
-            descr[property_name][method] = attribute
+            property_methods[property_name][method] = attribute
 
-        for property_name, mapping in descr.items():
-            new_property = property(
-                mapping.get(GET, None),
-                mapping.get(SET, None),
-                mapping.get(DEL, None),
+        for property_name, methods in property_methods.items():
+            constructed_property = property(
+                methods.get(GET, None),
+                methods.get(SET, None),
+                methods.get(DEL, None),
             )
-            setattr(result, property_name, new_property)
+            setattr(new_class, property_name, constructed_property)
 
-        return result
+        return new_class
 
 
 class Example(metaclass=YourMetaClass):
