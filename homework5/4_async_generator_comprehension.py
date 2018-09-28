@@ -1,6 +1,11 @@
 """
+Homework 5.
+
+Output sum of prime numbers in the specified range [n, m).
+
 Use of ProcessPoolExecutor shared by coroutines and async generator
 comprehension.
+
 """
 import asyncio
 from concurrent.futures import ProcessPoolExecutor

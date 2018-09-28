@@ -1,3 +1,10 @@
+"""
+Homework 5.
+
+Output sum of prime numbers in the specified range [n, m).
+Using concurrent.futures.
+
+"""
 from concurrent.futures import ProcessPoolExecutor
 
 N = 10 ** 2
