@@ -28,7 +28,8 @@ class YourMetaClass(type):
             except ValueError:
                 continue
 
-            if method not in (GET, SET, DEL):
+            if (method not in (GET, SET, DEL)
+                    or not property_name.isidentifier()):
                 continue
 
             property_methods[property_name][method] = attribute
