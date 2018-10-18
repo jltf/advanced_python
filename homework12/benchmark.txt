@@ -1,0 +1,12 @@
+Python:
+$ python -m timeit -s "import fibonacci" "fibonacci.fib(1000)"
+5000 loops, best of 5: 49.1 usec per loop
+
+Cython:
+$ python -m timeit -s "import fibonacci_extension" "fibonacci_extension.nth(1000)"
+5000 loops, best of 5: 42 usec per loop
+
+C Extension:
+$ python -m timeit -s "import fibonacci" "fibonacci.fibonacci(1000)"
+5000 loops, best of 5: 41.1 usec per loop
+
