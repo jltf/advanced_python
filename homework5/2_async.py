@@ -10,8 +10,8 @@ def prime_or_zero(n):
     if n < 2:
         return 0
     if n == 2:
-        return n
-    for m in range(3, n, 2):
+        return 2
+    for m in range(2, n):
         if n % m == 0:
             return 0
     return n
