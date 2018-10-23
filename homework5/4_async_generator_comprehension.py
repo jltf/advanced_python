@@ -37,7 +37,7 @@ def check_prime(n):
         return False
     if n == 2:
         return True
-    for m in range(3, n, 2):
+    for m in range(2, n):
         if n % m == 0:
             return False
     return True
