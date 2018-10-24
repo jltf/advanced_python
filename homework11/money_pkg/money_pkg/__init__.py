@@ -1,0 +1,1 @@
+name = 'money_pkg'
