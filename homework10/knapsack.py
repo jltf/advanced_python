@@ -1,13 +1,12 @@
-from collections import namedtuple
-from itertools import takewhile
-from functools import total_ordering
+from contextlib import suppress
 import csv
+from functools import total_ordering
 
 CAPACITY = 400  # weight in dag
 
 
 @total_ordering
-class Item:
+class Item(object):
     def __init__(self, title, weight, value):
         self.title = title
         self.weight = weight
@@ -15,10 +14,12 @@ class Item:
         self.efficiency = self.value / self.weight
 
     def __repr__(self):
-        return f'Item({self.title}, {self.weight}, {self.value})'
+        return '<Item({}, {}, {})>'.format(
+            self.title, self.weight, self.value
+        )
 
     def __str__(self):
-        return self.__repr__
+        return '{}({}, {})'.format(self.title, self.weight, self.value)
 
     def __eq__(self, other):
         return self.efficiency == other.efficiency
@@ -27,25 +28,32 @@ class Item:
         return self.efficiency < other.efficiency
 
 
-class Pack:
-    def __init__(self):
+class DoesNotFit(Exception):
+    pass
+
+
+class Pack(object):
+    def __init__(self, capacity):
         self.weight = 0
         self.items = list()
+        self.capacity = capacity
 
     def add(self, item):
         if not self.will_fit(item):
-            raise ValueError
+            raise DoesNotFit
 
         self.items.append(item)
         self.weight += item.weight
 
     def will_fit(self, item):
-        if self.weight + item.weight > CAPACITY:
+        if self.weight + item.weight > self.capacity:
             return False
         return True
 
     def __str__(self):
-        return str(self.items) + str(self.weight)
+        return '[{}]\nTotal weight: {}'.format(
+            ', '.join(str(i) for i in self.items), self.weight
+        )
 
 
 if __name__ == '__main__':
@@ -53,16 +61,15 @@ if __name__ == '__main__':
         with open(filename) as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
+                title = row['item']
                 weight = int(row['weight(dag)'])
                 value = int(row['value'])
-                yield Item(row['item'], weight, value)
+                yield Item(title, weight, value)
 
-    pack = Pack()
+    pack = Pack(capacity=CAPACITY)
 
-    try:
+    with suppress(DoesNotFit):
         for item in sorted(iter_items('items.csv'), reverse=True):
             pack.add(item)
-    except ValueError:
-        pass
 
     print(pack)
