@@ -1,13 +1,11 @@
-from collections import namedtuple
-from itertools import takewhile
-from functools import total_ordering
 import csv
+from functools import total_ordering
 
 CAPACITY = 400  # weight in dag
 
 
 @total_ordering
-class Item:
+class Item(object):
     def __init__(self, title, weight, value):
         self.title = title
         self.weight = weight
@@ -15,7 +13,7 @@ class Item:
         self.efficiency = self.value / self.weight
 
     def __repr__(self):
-        return f'Item({self.title}, {self.weight}, {self.value})'
+        return 'Item({}, {}, {})'.format(self.title, self.weight, self.value)
 
     def __str__(self):
         return self.__repr__
@@ -27,7 +25,7 @@ class Item:
         return self.efficiency < other.efficiency
 
 
-class Pack:
+class Pack(object):
     def __init__(self):
         self.weight = 0
         self.items = list()
