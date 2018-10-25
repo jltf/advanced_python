@@ -15,7 +15,7 @@ class Currency(enum.Enum):
         return self.name
 
 
-class Money:
+class Money(object):
     byn_rates = None
 
     def __init__(self, value, currency=Currency.USD):
@@ -23,10 +23,12 @@ class Money:
         self.currency = currency
 
     def __str__(self):
-        return f'{self.value:.2f} {self.currency}'
+        return '{:.2f} {}'.format(self.value, self.currency)
 
     def __repr__(self):
-        return f'<{self.__class__.__name__}({self.value}, {self.currency})>'
+        return '<{}({}, {})>'.format(
+            self.__class__.__name__, self.value, self.currency
+        )
 
     def __add__(self, other):
         converted = other.convert(self.currency)
