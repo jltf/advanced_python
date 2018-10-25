@@ -15,7 +15,7 @@ class Currency(enum.Enum):
         return self.name
 
 
-class Money:
+class Money(object):
     byn_rates = None
 
     def __init__(self, value, currency=Currency.USD):
