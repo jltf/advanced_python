@@ -14,12 +14,10 @@ class Item(object):
         self.efficiency = self.value / self.weight
 
     def __repr__(self):
-        return '<Item({}, {}, {})>'.format(
-            self.title, self.weight, self.value
-        )
+        return f'<Item({self.title}, {self.weight}, {self.value})>'
 
     def __str__(self):
-        return '{}({}, {})'.format(self.title, self.weight, self.value)
+        return f'{self.title}({self.weight}, {self.value})'
 
     def __eq__(self, other):
         return self.efficiency == other.efficiency
@@ -51,10 +49,8 @@ class Pack(object):
         return True
 
     def __str__(self):
-        return '[{}]\nTotal weight: {}'.format(
-            ', '.join(str(i) for i in self.items), self.weight
-        )
-
+        item_string = ', '.join(str(i) for i in self.items)
+        return f'[{item_string}]\nTotal weight: {self.weight}'
 
 if __name__ == '__main__':
     def iter_items(filename):

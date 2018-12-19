@@ -23,12 +23,10 @@ class Money(object):
         self.currency = currency
 
     def __str__(self):
-        return '{:.2f} {}'.format(self.value, self.currency)
+        return f'{self.value:.2f} {self.currency}'
 
     def __repr__(self):
-        return '<{}({}, {})>'.format(
-            self.__class__.__name__, self.value, self.currency
-        )
+        return f'<{self.__class__.__name__}({self.value}, {self.currency})>'
 
     def __add__(self, other):
         converted = other.convert(self.currency)
